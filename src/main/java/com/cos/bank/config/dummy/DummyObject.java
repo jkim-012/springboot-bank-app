@@ -14,6 +14,7 @@ public class DummyObject {
         String encodedPw = passwordEncoder.encode("1234");
 
         return User.builder()
+                .id(1L)
                 .username(username)
                 .password(encodedPw)
                 .email(username + "@email.com")

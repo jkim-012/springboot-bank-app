@@ -20,12 +20,12 @@ public class JoinDto {
 
         @NotBlank(message = "Username is a required field.")
         @Size(min = 4, max = 20, message = "Username should be between 4 and 20 characters.")
-        @Pattern(regexp = "^[a-zA-Z0-9]{5,20}$",
+        @Pattern(regexp = "^[a-zA-Z0-9]{4,20}$",
                 message = "Username can contain any letters from a to z and any numbers from 0 through 9.")
         private String username;
 
         @NotBlank(message = "Password is a required field.")
-        @Size(min = 4, max = 20, message = "Password should be between 5 and 20 characters.")
+        @Size(min = 4, max = 20, message = "Password should be between 4 and 20 characters.")
         private String password;
 
         @Email(message = "Please enter a valid email address.")

@@ -5,8 +5,6 @@ import com.cos.bank.user.domain.Role;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.dto.JoinDto;
 import com.cos.bank.user.repository.UserRepository;
-import com.cos.bank.user.service.UserService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
