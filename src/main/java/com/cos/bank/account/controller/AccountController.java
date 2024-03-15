@@ -4,7 +4,7 @@ package com.cos.bank.account.controller;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.config.auth.LoginUser;
-import com.cos.bank.handler.ResponseDto;
+import com.cos.bank.util.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

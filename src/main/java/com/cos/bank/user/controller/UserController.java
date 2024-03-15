@@ -1,6 +1,6 @@
 package com.cos.bank.user.controller;
 
-import com.cos.bank.handler.ResponseDto;
+import com.cos.bank.util.ResponseDto;
 import com.cos.bank.user.dto.JoinDto;
 import com.cos.bank.user.service.UserService;
 import lombok.RequiredArgsConstructor;

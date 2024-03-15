@@ -1,6 +1,6 @@
 package com.cos.bank.handler.exception;
 
-import com.cos.bank.handler.ResponseDto;
+import com.cos.bank.util.ResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

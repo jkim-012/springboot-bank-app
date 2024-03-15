@@ -1,4 +1,4 @@
-package com.cos.bank.handler;
+package com.cos.bank.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
