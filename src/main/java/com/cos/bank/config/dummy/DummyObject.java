@@ -1,5 +1,6 @@
 package com.cos.bank.config.dummy;
 
+import com.cos.bank.account.domain.Account;
 import com.cos.bank.user.domain.Role;
 import com.cos.bank.user.domain.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,5 +42,26 @@ public class DummyObject {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+    }
+
+    protected Account newAccount(Long number, User user) {
+        return Account.builder()
+                .number(number)
+                .password("1234")
+                .balance(10L)
+                .user(user)
+                .build();
+    }
+
+    protected Account newMockAccount(Long id, Long number, Long balance, User user) {
+        return Account.builder()
+                .id(id)
+                .number(number)
+                .password("1234")
+                .balance(balance)
+                .user(user)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 }

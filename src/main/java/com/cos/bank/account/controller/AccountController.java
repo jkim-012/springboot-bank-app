@@ -1,6 +1,7 @@
 package com.cos.bank.account.controller;
 
 
+import com.cos.bank.account.dto.AccountListDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.config.auth.LoginUser;
@@ -10,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -34,5 +32,14 @@ public class AccountController {
         RegisterAccountDto.Response response = accountService.createAccount(request, loginUser.getUser().getId());
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "Account register succeeded.", response), HttpStatus.OK);
+    }
+
+    // API for reading user's account list
+    @GetMapping("/accounts")
+    public ResponseEntity<?> getAllAccountsByUser(
+            @AuthenticationPrincipal LoginUser loginUser){
+        AccountListDto accountListDto = accountService.getAllAccounts(loginUser.getUser().getId());
+        return new ResponseEntity<>(
+                new ResponseDto<>(1, "User accounts retrieved successfully.", accountListDto), HttpStatus.OK);
     }
 }
