@@ -6,6 +6,7 @@ import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.handler.exception.CustomApiException;
+import com.cos.bank.handler.exception.CustomForbiddenException;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +30,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public RegisterAccountDto.Response createAccount(RegisterAccountDto.Request request, Long userId) {
         // check if user exists
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomApiException("User not found."));
-
+        User user = getUser(userId);
         // create account number
         Long accountNumber;
         boolean existsInDb = false;
@@ -58,20 +57,36 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountListDto getAllAccounts(Long userId) {
         // check if user exists
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomApiException("User not found."));
+        User user = getUser(userId);
         // get all accounts by user
         List<Account> accounts = accountRepository.findByUser_Id(userId);
-        // if there is no account
-        if (accounts.isEmpty()) {
-            throw new CustomApiException("No accounts found for the user.");
-        }
         return AccountListDto.of(user, accounts);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAccount(Long accountId, Long userId) {
+        // check if user exists
+        User user = getUser(userId);
+        // find account
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(()-> new CustomApiException("Account not found."));
+        // check authority
+        if (!account.getUser().getId().equals(userId)){
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to delete this account");
+        }
+        accountRepository.delete(account);
     }
 
     private Long generateAccountNumber() {
         Random random = new Random();
         long number = 1000000000L + random.nextLong() % 9000000000L;
         return Math.abs(number); // number is always positive
+    }
+
+    private User getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomApiException("User not found."));
+        return user;
     }
 }

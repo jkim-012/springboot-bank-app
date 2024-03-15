@@ -1,6 +1,8 @@
 package com.cos.bank.account.controller;
 
+import com.cos.bank.account.domain.Account;
 import com.cos.bank.account.dto.RegisterAccountDto;
+import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.account.service.impl.AccountServiceImpl;
 import com.cos.bank.config.dummy.DummyObject;
 import com.cos.bank.user.domain.User;
@@ -19,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
@@ -37,9 +39,13 @@ class AccountControllerTest extends DummyObject {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
     @BeforeEach
     void setUp() {
         User user = userRepository.save(newUser("ssar", "first", "last")); // create user
+        Account account = accountRepository.save(newAccount(1234567891L, user));
     }
 
     //execute before save_account_test, search "ssar" in db and use it for authentication
@@ -64,5 +70,37 @@ class AccountControllerTest extends DummyObject {
         // then
         resultActions.andExpect(status().isOk());
     }
+
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void get_accounts_test() throws Exception {
+        // given
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(get("/api/accounts").contentType(MediaType.APPLICATION_JSON));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("test result: " + responseBody); // will return empty list
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void delete_account_test() throws Exception {
+        // given
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(delete("/api/accounts/1").contentType(MediaType.APPLICATION_JSON));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("test result: " + responseBody);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+
 
 }

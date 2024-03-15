@@ -5,6 +5,7 @@ import com.cos.bank.account.dto.AccountListDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.config.dummy.DummyObject;
+import com.cos.bank.handler.exception.CustomApiException;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,12 +18,14 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +53,8 @@ class AccountServiceImplTest extends DummyObject {
 
         Long userId = 1L;
 
-        // stub 1 - mocking user repository to return a user (user exists -> can create an account)
+        // stub 1 - mocking user repository to return a user
+        // (user exists -> can create an account)
         User user = newMockUser(1L, "ssar", "first", "last");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -73,7 +77,8 @@ class AccountServiceImplTest extends DummyObject {
     void get_accounts_by_user_success_test() throws Exception {
         // given
         Long userId = 1L;
-        // stub 1 - mocking user repository to return a user (user exists -> can create an account)
+        // stub 1 - mocking user repository to return a user
+        // (user exists -> can get accounts)
         User user = newMockUser(1L, "ssar", "first", "last");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -81,8 +86,6 @@ class AccountServiceImplTest extends DummyObject {
         List<Account> accounts = new ArrayList<>();
         accounts.add(newMockAccount(1L, 1234567891L, 10L, user));
         accounts.add(newMockAccount(2L, 1234567892L, 20L, user));
-
-        // stub 3 - mocking
         when(accountRepository.findByUser_Id(userId)).thenReturn(accounts);
 
         // when
@@ -96,18 +99,17 @@ class AccountServiceImplTest extends DummyObject {
         assertThat(accountListDto.getAccountDtos().size()).isEqualTo(2);
     }
 
-    @Disabled
     @Test
     void get_accounts_by_user_empty_test() throws Exception {
         // given
         Long userId = 1L;
-        // stub 1 - mocking user repository to return a user (user exists -> can create an account)
+        // stub 1 - mocking user repository to return a user
+        // (user exists -> can get accounts)
         User user = newMockUser(1L, "ssar", "first", "last");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // stub 2 - mocking account repository to return a list of accounts for the user
         List<Account> accounts = new ArrayList<>();
-        // stub 3 - mocking
         when(accountRepository.findByUser_Id(userId)).thenReturn(accounts); //empty list
 
         // when
@@ -121,4 +123,40 @@ class AccountServiceImplTest extends DummyObject {
         assertThat(accountListDto.getAccountDtos().size()).isEqualTo(0);
     }
 
+    @Test
+    void delete_account_success_test() {
+        // given
+        Long userId = 1L;
+        Long accountId = 1L;
+        // stub 1 - mocking user repository to return user
+        User user = newMockUser(1L, "ssar", "first", "last");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // stub 2 - mocking account repository to return account
+        Account account = newMockAccount(1L, 1234567891L, 10L, user);
+        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+
+        // when
+        accountService.deleteAccount(accountId, userId);
+        // then
+        verify(userRepository).findById(userId);
+        verify(accountRepository).findById(accountId);
+        verify(accountRepository).delete(account);
+    }
+
+    @Test
+    void delete_account_fail_test() {
+        // given
+        Long userId = 1L;
+        Long accountId = 1L;
+        // stub 1 - mocking user repository to return user
+        User user = newMockUser(1L, "ssar", "first", "last");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // stub 2 - mocking account repository to return nothing ( account doesn't exits)
+        when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
+
+        // when, then
+        assertThrows(CustomApiException.class, () -> accountService.deleteAccount(accountId, userId));
+    }
 }

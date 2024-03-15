@@ -7,4 +7,5 @@ public interface AccountService {
 
     RegisterAccountDto.Response createAccount(RegisterAccountDto.Request request, Long userId);
     AccountListDto getAllAccounts(Long userId);
+    void deleteAccount(Long accountId, Long id);
 }

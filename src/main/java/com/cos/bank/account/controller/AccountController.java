@@ -22,7 +22,7 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    // API for creating an account
+    // API for creating account
     @PostMapping("/account")
     public ResponseEntity<?> createAccount(
             @RequestBody @Valid RegisterAccountDto.Request request,
@@ -42,4 +42,15 @@ public class AccountController {
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "User accounts retrieved successfully.", accountListDto), HttpStatus.OK);
     }
+
+    // API for deleting account
+    @DeleteMapping("/accounts/{accountId}")
+    public ResponseEntity<?> deleteAccount(
+            @PathVariable Long accountId,
+            @AuthenticationPrincipal LoginUser loginUser){
+        accountService.deleteAccount(accountId, loginUser.getUser().getId());
+        return new ResponseEntity<>(
+                new ResponseDto<>(1, "Account deletion succeeded.", null), HttpStatus.OK);
+    }
+
 }
