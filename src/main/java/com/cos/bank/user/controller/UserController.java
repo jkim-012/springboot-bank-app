@@ -21,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // API endpoint for joining the bank
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody @Valid JoinDto.Request request, BindingResult bindingResult){
         JoinDto.Response response = userService.join(request);

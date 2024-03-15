@@ -1,6 +1,6 @@
 package com.cos.bank.user.service.impl;
 
-import com.cos.bank.handler.exception.CustomException;
+import com.cos.bank.handler.exception.CustomApiException;
 import com.cos.bank.user.domain.Role;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.dto.JoinDto;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> byUsername = userRepository.findByUsername(request.getUsername());
         // throw exception if user exists
         if(byUsername.isPresent()){
-            throw new CustomException("Username is already exists. Please login with the existing account.");
+            throw new CustomApiException("Username is already exists. Please login with the existing account.");
         }
         // process join
         User user = User.builder()
