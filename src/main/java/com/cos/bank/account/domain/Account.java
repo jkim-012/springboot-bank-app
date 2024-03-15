@@ -25,13 +25,13 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 20)
-    private String number;
+    @Column(unique = true, nullable = false, length = 10)
+    private Long number;
 
-    @Column(nullable = false, length = 4)
-    private Long password;
+    @Column(nullable = false, length = 60)
+    private String password;
 
-    @Column(unique = true, nullable = false, length = 20)
+    @Column(nullable = false)
     private Long balance;
 
     @CreatedDate

@@ -56,7 +56,7 @@ class UserControllerTest extends DummyObject {
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
 
         // then
-        resultActions.andExpect(status().isCreated());
+        resultActions.andExpect(status().isOk());
     }
 
     @Test

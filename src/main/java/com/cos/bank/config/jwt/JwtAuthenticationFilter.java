@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // create response object
         LoginDto.Response loginDto = LoginDto.Response.of(loginUser.getUser());
         // send response to the client
-        CustomResponseUtil.authenticationSuccess(response, "Login Succeed!", loginDto);
+        CustomResponseUtil.authenticationSuccess(response, "Login succeeded!", loginDto);
     }
 
     //if attemptAuthentication throw exception, this method will be called
@@ -80,6 +80,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
-        CustomResponseUtil.noAuthentication(response, "Login failed");
+        CustomResponseUtil.noAuthentication(response, "Login failed.");
     }
 }
