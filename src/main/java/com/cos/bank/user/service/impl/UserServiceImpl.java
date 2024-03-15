@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> byUsername = userRepository.findByUsername(request.getUsername());
         // throw exception if user exists
         if(byUsername.isPresent()){
-            throw new CustomApiException("Username is already exists. Please login with the existing account.");
+            throw new CustomApiException("Username is already exists.");
         }
         // process join
         User user = User.builder()
