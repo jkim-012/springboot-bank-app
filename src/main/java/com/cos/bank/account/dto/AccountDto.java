@@ -12,7 +12,7 @@ public class AccountDto {
 
     private Long id;
     private Long number;
-    private Long balance;
+    private Double balance;
 
     public static AccountDto of(Account account){
         return AccountDto.builder()

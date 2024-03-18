@@ -11,30 +11,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtServiceTest {
 
     @Test
-    void create_test() throws Exception {
-        //given
-        User user = User.builder()
-                .id(1L)
-                .role(Role.CUSTOMER)
-                .build();
+    void token_create_test() throws Exception {
+        // given
 
-        LoginUser loginUser = new LoginUser(user);
+        // when
+        String jwtToken = createToken();
+        System.out.println("test result : " + jwtToken);
 
-        //when
-        String token = JwtService.createJwtToken(loginUser);
-        System.out.println(token);
-
-        //then
-        assertTrue(token.startsWith(JwtValueObject.TOKEN_PREFIX));
+        // then
+        assertTrue(jwtToken.startsWith(JwtValueObject.TOKEN_PREFIX));
     }
 
     @Test
-    void test() {
+    void token_verify_test() {
         //given
-        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJiYW5rIiwicm9sZSI6IkNVU1RPTUVSIiwiaWQiOjEsImV4cCI6MTcxMTA1MzQ2NX0._gYd3yD_r7n5LWsx9zmJ6rL-u5GA-RKbOF-azxwGFMtfsPWw0ZjwAeZvS5eZjDHRlH3CScblYurSeKLAyXezCw";
+        String token = createToken();
+        // only get token from authorization value
+        String extractedToken = token.replace(JwtValueObject.TOKEN_PREFIX, "");
 
         //when
-        LoginUser loginUser = JwtService.verifyJwtToken(token);
+        LoginUser loginUser = JwtService.verifyJwtToken(extractedToken);
         System.out.println(loginUser.getUser().getId());
         System.out.println(loginUser.getUser().getRole());
 
@@ -42,6 +38,17 @@ class JwtServiceTest {
         assertThat(loginUser.getUser().getId()).isEqualTo(1L);
         assertThat(loginUser.getUser().getRole()).isEqualTo(Role.CUSTOMER);
 
+    }
+
+    private String createToken() {
+        User user = User.builder()
+                .id(1L)
+                .role(Role.CUSTOMER)
+                .build();
+
+        LoginUser loginUser = new LoginUser(user);
+
+        return JwtService.createJwtToken(loginUser);
     }
 
 }

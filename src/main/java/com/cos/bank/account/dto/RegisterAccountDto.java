@@ -31,7 +31,7 @@ public class RegisterAccountDto {
 
         private Long id;
         private Long number;
-        private Long balance;
+        private Double balance;
 
         public static Response of(Account account) {
             return Response.builder()

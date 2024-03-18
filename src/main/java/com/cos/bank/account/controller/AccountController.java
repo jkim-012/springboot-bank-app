@@ -1,6 +1,7 @@
 package com.cos.bank.account.controller;
 
 
+import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.AccountListDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.service.AccountService;
@@ -51,6 +52,17 @@ public class AccountController {
         accountService.deleteAccount(accountId, loginUser.getUser().getId());
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "Account deletion succeeded.", null), HttpStatus.OK);
+    }
+
+    // API for ATM deposit
+    @PostMapping("/deposit")
+    public ResponseEntity<?> deposit(
+            @RequestBody @Valid AccountDepositDto.Request request,
+            BindingResult bindingResult){
+        AccountDepositDto.Response response = accountService.deposit(request);
+        return new ResponseEntity<>(
+                new ResponseDto<>(1, "Deposit succeeded.", response), HttpStatus.OK);
+
     }
 
 }

@@ -30,15 +30,22 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     private Account depositAccount;
 
-    @Column(unique = true, nullable = false, length = 20)
-    private Long amount;
+    @Column(nullable = false)
+    private Double amount;
+
+    private Double withdrawAccountBalance; // tells balance after each withdraw transaction
+    private Double depositAccountBalance; // tells balance after each deposit transaction
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     private String sender;
-    private String receiver;
+    private String receiver; //account number
+
+    @Column(nullable = false)
     private String phone;
+
+    private String memo;
 
     @CreatedDate
     @Column(nullable = false)

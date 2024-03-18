@@ -10,7 +10,6 @@ import com.cos.bank.user.domain.User;
 import com.cos.bank.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,8 +82,8 @@ class AccountServiceImplTest extends DummyObject {
 
         // stub 2 - mocking account repository to return a list of accounts for the user
         List<Account> accounts = new ArrayList<>();
-        accounts.add(newMockAccount(1L, 1234567891L, 10L, user));
-        accounts.add(newMockAccount(2L, 1234567892L, 20L, user));
+        accounts.add(newMockAccount(1L, 1234567891L, 10.0, user));
+        accounts.add(newMockAccount(2L, 1234567892L, 20.0, user));
         when(accountRepository.findByUser_Id(userId)).thenReturn(accounts);
 
         // when
@@ -133,7 +131,7 @@ class AccountServiceImplTest extends DummyObject {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // stub 2 - mocking account repository to return account
-        Account account = newMockAccount(1L, 1234567891L, 10L, user);
+        Account account = newMockAccount(1L, 1234567891L, 10.0, user);
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
 
         // when

@@ -48,12 +48,12 @@ public class DummyObject {
         return Account.builder()
                 .number(number)
                 .password("1234")
-                .balance(10L)
+                .balance(10.0)
                 .user(user)
                 .build();
     }
 
-    protected Account newMockAccount(Long id, Long number, Long balance, User user) {
+    protected Account newMockAccount(Long id, Long number, Double balance, User user) {
         return Account.builder()
                 .id(id)
                 .number(number)

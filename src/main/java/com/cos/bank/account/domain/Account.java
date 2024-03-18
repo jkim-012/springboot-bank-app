@@ -32,7 +32,7 @@ public class Account {
     private String password;
 
     @Column(nullable = false)
-    private Long balance;
+    private Double balance;
 
     @CreatedDate
     @Column(nullable = false)
@@ -45,4 +45,7 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    public void deposit(Double amount) {
+        balance = balance + amount;
+    }
 }

@@ -1,12 +1,16 @@
 package com.cos.bank.account.service.impl;
 
 import com.cos.bank.account.domain.Account;
+import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.AccountListDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.handler.exception.CustomApiException;
 import com.cos.bank.handler.exception.CustomForbiddenException;
+import com.cos.bank.transaction.domain.Transaction;
+import com.cos.bank.transaction.domain.TransactionType;
+import com.cos.bank.transaction.repository.TransactionRepository;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
@@ -46,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = Account.builder()
                 .number(accountNumber)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .balance(10L) // minimum $10
+                .balance(10.0) // minimum $10
                 .user(user)
                 .build();
 
@@ -70,12 +75,43 @@ public class AccountServiceImpl implements AccountService {
         User user = getUser(userId);
         // find account
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(()-> new CustomApiException("Account not found."));
+                .orElseThrow(() -> new CustomApiException("Account not found."));
         // check authority
-        if (!account.getUser().getId().equals(userId)){
+        if (!account.getUser().getId().equals(userId)) {
             throw new CustomForbiddenException("Unauthorized: You do not have permission to delete this account");
         }
         accountRepository.delete(account);
+    }
+
+    @Transactional
+    @Override
+    public AccountDepositDto.Response deposit(AccountDepositDto.Request request) {
+        // check deposit amount
+        if (request.getAmount() <= 0) {
+            throw new CustomApiException("You can't deposit 0 or less amount.");
+        }
+        // find account
+        Account account = accountRepository.findByNumber(request.getDepositAccountNumber())
+                .orElseThrow(() -> new CustomApiException("Account not found."));
+
+        // deposit into the found account
+        account.deposit(request.getAmount());
+
+        // create transaction info(history)
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(null)
+                .depositAccount(account)
+                .amount(request.getAmount())
+                .withdrawAccountBalance(null)
+                .depositAccountBalance(account.getBalance())
+                .transactionType(TransactionType.DEPOSIT)
+                .sender("ATM")
+                .receiver(String.valueOf(request.getDepositAccountNumber()))
+                .phone(request.getPhone())
+                .build();
+
+        transactionRepository.save(transaction);
+        return AccountDepositDto.Response.of(account, transaction);
     }
 
     private Long generateAccountNumber() {
