@@ -1,11 +1,15 @@
 package com.cos.bank.account.service.impl;
 
 import com.cos.bank.account.domain.Account;
+import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.AccountListDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.config.dummy.DummyObject;
 import com.cos.bank.handler.exception.CustomApiException;
+import com.cos.bank.transaction.domain.Transaction;
+import com.cos.bank.transaction.domain.TransactionType;
+import com.cos.bank.transaction.repository.TransactionRepository;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,6 +41,8 @@ class AccountServiceImplTest extends DummyObject {
     private AccountRepository accountRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private TransactionRepository transactionRepository;
     @Spy
     private ObjectMapper om;
     @Spy
@@ -150,11 +156,41 @@ class AccountServiceImplTest extends DummyObject {
         // stub 1 - mocking user repository to return user
         User user = newMockUser(1L, "ssar", "first", "last");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
         // stub 2 - mocking account repository to return nothing ( account doesn't exits)
         when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
 
         // when, then
         assertThrows(CustomApiException.class, () -> accountService.deleteAccount(accountId, userId));
+    }
+
+    @Test
+    void deposit_success_test() {
+        // given
+        AccountDepositDto.Request request = AccountDepositDto.Request.builder()
+                .depositAccountNumber(1234567891L) // this account number doesn't exist
+                .amount(1000.0)
+                .transactionType(TransactionType.DEPOSIT)
+                .phone("1234567890")
+                .build();
+
+        // stub 1 - mocking account repository return the deposit account
+        // create user and its account
+        User user = newMockUser(1L, "ssar", "first", "last");
+        Account account = newMockAccount(1L, 1234567891L, 10.0, user);
+        when(accountRepository.findByNumber(request.getDepositAccountNumber())).thenReturn(Optional.of(account));
+
+        // stub 2 - mocking transaction repository to save transaction
+        Transaction transaction = newMockDepositTransaction(1L, newMockAccount(1L, 1234567891L, 10.0, user));
+        when(transactionRepository.save(any())).thenReturn(transaction);
+
+        // when,
+        AccountDepositDto.Response response = accountService.deposit(request);
+        // check transaction balance
+        System.out.println("test result: " + response.getTransactionDto().getDepositAccountBalance());
+        System.out.println("test result: " + account.getBalance());
+
+        // then
+        assertThat(account.getBalance()).isEqualTo(1010.0);
+        assertThat(response.getTransactionDto().getDepositAccountBalance()).isEqualTo(1010.0);
     }
 }

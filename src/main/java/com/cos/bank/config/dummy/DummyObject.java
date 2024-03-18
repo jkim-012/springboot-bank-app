@@ -1,6 +1,8 @@
 package com.cos.bank.config.dummy;
 
 import com.cos.bank.account.domain.Account;
+import com.cos.bank.transaction.domain.Transaction;
+import com.cos.bank.transaction.domain.TransactionType;
 import com.cos.bank.user.domain.Role;
 import com.cos.bank.user.domain.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -59,6 +61,24 @@ public class DummyObject {
                 .password("1234")
                 .balance(balance)
                 .user(user)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    protected Transaction newMockDepositTransaction(Long id, Account account){
+        account.deposit(10.0);
+        return Transaction.builder()
+                .id(id)
+                .withdrawAccount(null)
+                .depositAccount(account)
+                .amount(10.0)
+                .withdrawAccountBalance(null)
+                .depositAccountBalance(account.getBalance())
+                .transactionType(TransactionType.DEPOSIT)
+                .sender("ATM")
+                .receiver(String.valueOf(account.getNumber()))
+                .phone("1234567890")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

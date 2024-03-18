@@ -62,7 +62,6 @@ public class AccountController {
         AccountDepositDto.Response response = accountService.deposit(request);
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "Deposit succeeded.", response), HttpStatus.OK);
-
     }
 
 }

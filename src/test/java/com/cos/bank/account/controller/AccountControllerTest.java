@@ -1,10 +1,12 @@
 package com.cos.bank.account.controller;
 
 import com.cos.bank.account.domain.Account;
+import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.config.dummy.DummyObject;
 import com.cos.bank.handler.exception.CustomApiException;
+import com.cos.bank.transaction.domain.TransactionType;
 import com.cos.bank.user.domain.User;
 import com.cos.bank.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +53,7 @@ class AccountControllerTest extends DummyObject {
     @BeforeEach
     void setUp() {
         // make a user and their account
-        User user1 = userRepository.save(newUser("ssar", "first", "last")); // create user1
+        User user1 = userRepository.save(newUser("ssar", "first", "last"));
         Account account1 = accountRepository.save(newAccount(1234567891L, user1));
 
         // make another user and their account to test delete api
@@ -62,7 +64,8 @@ class AccountControllerTest extends DummyObject {
         entityManager.clear();
     }
 
-    //@WithUserDetails : execute before save_account_test, search "ssar" in db and use it for authentication (currently login user info)
+    //@WithUserDetails : execute before save_account_test,
+    // search "ssar" in db and use it for authentication (currently login user info)
     @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void save_account_success_test() throws Exception {
@@ -116,6 +119,7 @@ class AccountControllerTest extends DummyObject {
                 () -> new CustomApiException("Account not found.")));
     }
 
+    // logged in user : ssar2 (user2)
     @WithUserDetails(value = "ssar2", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void delete_account_fail_test() throws Exception {
@@ -132,8 +136,54 @@ class AccountControllerTest extends DummyObject {
         resultActions.andExpect(status().isForbidden());
     }
 
+    @Test
+    void deposit_success_test() throws Exception {
+        // given
+        AccountDepositDto.Request request = AccountDepositDto.Request.builder()
+                .depositAccountNumber(1234567891L) //ssar1's account number
+                .amount(1000.0)
+                .transactionType(TransactionType.DEPOSIT)
+                .phone("1234567890")
+                .build();
 
+        String requestBody = om.writeValueAsString(request);
+        System.out.println("test result: " + requestBody);
 
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(post("/api/deposit").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println(responseBody);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void deposit_fail_test() throws Exception {
+        // given
+        AccountDepositDto.Request request = AccountDepositDto.Request.builder()
+                .depositAccountNumber(1234567894L) // this account number doesn't exist
+                .amount(1000.0)
+                .transactionType(TransactionType.DEPOSIT)
+                .phone("1234567890")
+                .build();
+
+        String requestBody = om.writeValueAsString(request);
+        System.out.println("test result: " + requestBody);
+
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(post("/api/deposit").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("test result: " + responseBody);
+
+        // then
+        // fail due to Account not found exception (account number error)
+        resultActions.andExpect(status().isBadRequest());
+    }
 
 
 }
