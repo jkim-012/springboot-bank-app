@@ -2,6 +2,7 @@ package com.cos.bank.account.controller;
 
 import com.cos.bank.account.domain.Account;
 import com.cos.bank.account.dto.AccountDepositDto;
+import com.cos.bank.account.dto.AccountTransferDto;
 import com.cos.bank.account.dto.AccountWithdrawDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
@@ -238,5 +239,50 @@ class AccountControllerTest extends DummyObject {
         assertThrows(CustomApiException.class, () -> accountService.withdraw(request, 1L));
     }
 
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void transfer_success_test() throws Exception {
+        // given
+        AccountTransferDto.Request request = AccountTransferDto.Request.builder()
+                .amount(10.0)
+                .withdrawAccountNumber(1234567891L) // ssar's account
+                .depositAccountNumber(1234567892L) // ssar2's account
+                .transactionType(TransactionType.TRANSFER)
+                .withdrawAccountPw("1234") //ssar's account pw
+                .build();
+
+        String requestBody = om.writeValueAsString(request);
+        System.out.println("test result: " + requestBody);
+
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(post("/api/account/transfer").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println(responseBody);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void transfer_fail_test() throws Exception {
+        // given
+        AccountTransferDto.Request request = AccountTransferDto.Request.builder()
+                .amount(10.0)
+                .withdrawAccountNumber(1234567891L) // ssar's account
+                .depositAccountNumber(1234567892L) // ssar2's account
+                .transactionType(TransactionType.TRANSFER)
+                .withdrawAccountPw("1235") //wrong password
+                .build();
+
+        String requestBody = om.writeValueAsString(request);
+        System.out.println("test result: " + requestBody);
+
+        // when, then
+        // account pw is incorrect, exception will happen
+        assertThrows(CustomApiException.class, () -> accountService.transfer(request, 1L));
+    }
 
 }
