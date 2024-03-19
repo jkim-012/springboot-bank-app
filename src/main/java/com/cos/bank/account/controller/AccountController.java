@@ -3,6 +3,7 @@ package com.cos.bank.account.controller;
 
 import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.AccountListDto;
+import com.cos.bank.account.dto.AccountWithdrawDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.config.auth.LoginUser;
@@ -62,6 +63,17 @@ public class AccountController {
         AccountDepositDto.Response response = accountService.deposit(request);
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "Deposit succeeded.", response), HttpStatus.OK);
+    }
+
+    // API for ATM withdrawal
+    @PostMapping("/account/withdrawal")
+    public ResponseEntity<?> withdraw(
+            @RequestBody @Valid AccountWithdrawDto.Request request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal LoginUser loginUser){
+        AccountWithdrawDto.Response response = accountService.withdraw(request, loginUser.getUser().getId());
+        return new ResponseEntity<>(
+                new ResponseDto<>(1,"Withdrawal succeeded", response),HttpStatus.OK);
     }
 
 }

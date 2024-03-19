@@ -3,6 +3,7 @@ package com.cos.bank.account.service.impl;
 import com.cos.bank.account.domain.Account;
 import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.AccountListDto;
+import com.cos.bank.account.dto.AccountWithdrawDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.account.service.AccountService;
@@ -114,10 +115,50 @@ public class AccountServiceImpl implements AccountService {
         return AccountDepositDto.Response.of(account, transaction);
     }
 
+    @Override
+    public AccountWithdrawDto.Response withdraw(AccountWithdrawDto.Request request, Long userId) {
+        // check deposit amount
+        if (request.getAmount() <= 0) {
+            throw new CustomApiException("You can't deposit 0 or less amount.");
+        }
+        // find account
+        Account account = accountRepository.findByNumber(request.getWithdrawAccountNumber())
+                .orElseThrow(() -> new CustomApiException("Account not found."));
+
+        // check authority
+        if (!account.getUser().getId().equals(userId)) {
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to delete this account");
+        }
+        // verify password
+        if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
+            throw new CustomApiException("Incorrect account password.");
+        }
+        // current balance check (should have more than withdrawal amount)
+        if (account.getBalance() < request.getAmount()){
+            throw new CustomApiException("Insufficient funds.");
+        }
+        // withdraw
+        account.withdraw(request.getAmount());
+        // create transaction info(history)
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(account)
+                .depositAccount(null)
+                .amount(request.getAmount())
+                .withdrawAccountBalance(account.getBalance())
+                .depositAccountBalance(null)
+                .transactionType(TransactionType.WITHDRAW)
+                .sender(String.valueOf(request.getWithdrawAccountNumber()))
+                .receiver("ATM")
+                .build();
+
+        transactionRepository.save(transaction);
+        return AccountWithdrawDto.Response.of(account, transaction);
+    }
+
     private Long generateAccountNumber() {
         Random random = new Random();
-        long number = 1000000000L + random.nextLong() % 9000000000L;
-        return Math.abs(number); // number is always positive
+        long number = 1000000000L + random.nextInt(900000000); // generate a random number in the range [1000000000, 1899999999]
+        return number;
     }
 
     private User getUser(Long userId) {

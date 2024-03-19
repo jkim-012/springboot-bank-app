@@ -46,6 +46,10 @@ public class Account {
     private User user;
 
     public void deposit(Double amount) {
-        balance = balance + amount;
+        balance += amount;
+    }
+
+    public void withdraw(Double amount) {
+        balance -= amount;
     }
 }

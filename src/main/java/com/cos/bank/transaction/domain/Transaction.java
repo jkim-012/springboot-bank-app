@@ -42,7 +42,6 @@ public class Transaction {
     private String sender;
     private String receiver; //account number
 
-    @Column(nullable = false)
     private String phone;
 
     private String memo;

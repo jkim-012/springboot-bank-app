@@ -17,9 +17,10 @@ public class RegisterAccountDto {
     public static class Request{
 
         @NotBlank(message = "Password is a required field.")
-        @Size(max = 4, message = "Password should be exactly 4 numbers.")
+        @Size(min = 4, max = 4, message = "Password should be exactly 4 numbers.")
         @Pattern(regexp = "^[0-9]{4}$", message = "Password should consist of exactly 4 numbers.")
         private String password;
+
     }
 
     @Getter
