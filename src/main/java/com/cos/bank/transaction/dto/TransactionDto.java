@@ -43,7 +43,7 @@ public class TransactionDto {
                 .createdAt(transaction.getCreatedAt())
                 .updatedAt(transaction.getUpdatedAt())
                 .depositAccountBalance(transaction.getDepositAccountBalance()) // only used for test
-                .withdrawAccountBalance(transaction.getDepositAccountBalance()) // only used for test
+                .withdrawAccountBalance(transaction.getWithdrawAccountBalance()) // only used for test
                 .build();
     }
 }

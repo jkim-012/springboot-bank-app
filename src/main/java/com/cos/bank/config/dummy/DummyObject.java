@@ -10,10 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.time.LocalDateTime;
 
 public class DummyObject {
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     protected User newUser(String username, String firstName, String lastName) {
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPw = passwordEncoder.encode("1234");
 
         return User.builder()
@@ -28,7 +28,6 @@ public class DummyObject {
 
     protected User newMockUser(Long id, String username, String firstName, String lastName) {
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPw = passwordEncoder.encode("1234");
 
         return User.builder()
@@ -46,19 +45,24 @@ public class DummyObject {
     }
 
     protected Account newAccount(Long number, User user) {
+
+        String encodedPw = passwordEncoder.encode("1234");
+
         return Account.builder()
                 .number(number)
-                .password("1234")
+                .password(encodedPw)
                 .balance(10.0)
                 .user(user)
                 .build();
     }
 
     protected Account newMockAccount(Long id, Long number, Double balance, User user) {
+        String encodedPw = passwordEncoder.encode("1234");
+
         return Account.builder()
                 .id(id)
                 .number(number)
-                .password("1234")
+                .password(encodedPw)
                 .balance(balance)
                 .user(user)
                 .createdAt(LocalDateTime.now())
@@ -79,6 +83,23 @@ public class DummyObject {
                 .sender("ATM")
                 .receiver(String.valueOf(account.getNumber()))
                 .phone("1234567890")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    protected Transaction newMockWithdrawTransaction(Long id, Account account){
+        account.withdraw( 10.0);
+        return Transaction.builder()
+                .id(id)
+                .withdrawAccount(account)
+                .depositAccount(null)
+                .amount(10.0)
+                .withdrawAccountBalance(account.getBalance())
+                .depositAccountBalance(null)
+                .transactionType(TransactionType.WITHDRAW)
+                .sender(String.valueOf(account.getNumber()))
+                .receiver(null)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

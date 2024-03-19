@@ -3,6 +3,7 @@ package com.cos.bank.account.service.impl;
 import com.cos.bank.account.domain.Account;
 import com.cos.bank.account.dto.AccountDepositDto;
 import com.cos.bank.account.dto.AccountListDto;
+import com.cos.bank.account.dto.AccountWithdrawDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.config.dummy.DummyObject;
@@ -192,5 +193,37 @@ class AccountServiceImplTest extends DummyObject {
         // then
         assertThat(account.getBalance()).isEqualTo(1010.0);
         assertThat(response.getTransactionDto().getDepositAccountBalance()).isEqualTo(1010.0);
+    }
+
+    @Test
+    void withdraw_success_test() {
+        // given
+        AccountWithdrawDto.Request request = AccountWithdrawDto.Request.builder()
+                .amount(10.0)
+                .withdrawAccountNumber(1234567891L)
+                .password("1234")
+                .transactionType(TransactionType.WITHDRAW)
+                .build();
+
+        // stub 1 - mocking account repository return the deposit account
+        // create user and its account
+        User user = newMockUser(1L, "ssar", "first", "last");
+        Account account = newMockAccount(1L, 1234567891L, 100.0, user);
+        when(accountRepository.findByNumber(request.getWithdrawAccountNumber())).thenReturn(Optional.of(account));
+
+        // stub 2 - mocking transaction repository to save transaction
+        Transaction transaction = newMockWithdrawTransaction(1L, newMockAccount(1L, 1234567891L, 100.0, user));
+        when(transactionRepository.save(any())).thenReturn(transaction);
+
+        // when
+        AccountWithdrawDto.Response response = accountService.withdraw(request, 1L);
+        // check transaction balance
+        System.out.println("test result: " + response.getTransactionDto().getWithdrawAccountBalance());
+        System.out.println("test result: " + account.getBalance());
+
+        // then
+        assertThat(account.getBalance()).isEqualTo(90.0);
+        assertThat(response.getTransactionDto().getWithdrawAccountBalance()).isEqualTo(90.0);
+
     }
 }

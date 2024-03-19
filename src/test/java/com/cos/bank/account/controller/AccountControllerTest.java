@@ -2,8 +2,10 @@ package com.cos.bank.account.controller;
 
 import com.cos.bank.account.domain.Account;
 import com.cos.bank.account.dto.AccountDepositDto;
+import com.cos.bank.account.dto.AccountWithdrawDto;
 import com.cos.bank.account.dto.RegisterAccountDto;
 import com.cos.bank.account.repository.AccountRepository;
+import com.cos.bank.account.service.impl.AccountServiceImpl;
 import com.cos.bank.config.dummy.DummyObject;
 import com.cos.bank.handler.exception.CustomApiException;
 import com.cos.bank.transaction.domain.TransactionType;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -49,6 +52,12 @@ class AccountControllerTest extends DummyObject {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private AccountServiceImpl accountService;
 
     @BeforeEach
     void setUp() {
@@ -183,6 +192,50 @@ class AccountControllerTest extends DummyObject {
         // then
         // fail due to Account not found exception (account number error)
         resultActions.andExpect(status().isBadRequest());
+    }
+
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void withdraw_success_test() throws Exception {
+        // given
+        AccountWithdrawDto.Request request = AccountWithdrawDto.Request.builder()
+                .amount(10.0)
+                .withdrawAccountNumber(1234567891L) //ssar's account
+                .password("1234")
+                .transactionType(TransactionType.WITHDRAW)
+                .build();
+
+        String requestBody = om.writeValueAsString(request);
+        System.out.println("test result: " + requestBody);
+
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(post("/api/account/withdrawal").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println(responseBody);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void withdraw_fail_test() throws Exception {
+        // given
+        AccountWithdrawDto.Request request = AccountWithdrawDto.Request.builder()
+                .amount(10.0)
+                .withdrawAccountNumber(1234567894L) // account doesn't exist
+                .password("1234")
+                .transactionType(TransactionType.WITHDRAW)
+                .build();
+
+        String requestBody = om.writeValueAsString(request);
+        System.out.println("test result: " + requestBody);
+
+        // when, then
+        // account is not found, exception will happen
+        assertThrows(CustomApiException.class, () -> accountService.withdraw(request, 1L));
     }
 
 
