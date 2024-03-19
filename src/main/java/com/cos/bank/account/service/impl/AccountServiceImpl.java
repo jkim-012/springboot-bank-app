@@ -1,10 +1,7 @@
 package com.cos.bank.account.service.impl;
 
 import com.cos.bank.account.domain.Account;
-import com.cos.bank.account.dto.AccountDepositDto;
-import com.cos.bank.account.dto.AccountListDto;
-import com.cos.bank.account.dto.AccountWithdrawDto;
-import com.cos.bank.account.dto.RegisterAccountDto;
+import com.cos.bank.account.dto.*;
 import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.handler.exception.CustomApiException;
@@ -69,6 +66,7 @@ public class AccountServiceImpl implements AccountService {
         return AccountListDto.of(user, accounts);
     }
 
+
     @Transactional
     @Override
     public void deleteAccount(Long accountId, Long userId) {
@@ -115,6 +113,7 @@ public class AccountServiceImpl implements AccountService {
         return AccountDepositDto.Response.of(account, transaction);
     }
 
+    @Transactional
     @Override
     public AccountWithdrawDto.Response withdraw(AccountWithdrawDto.Request request, Long userId) {
         // check deposit amount
@@ -127,7 +126,7 @@ public class AccountServiceImpl implements AccountService {
 
         // check authority
         if (!account.getUser().getId().equals(userId)) {
-            throw new CustomForbiddenException("Unauthorized: You do not have permission to delete this account");
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to withdraw from this account");
         }
         // verify password
         if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
@@ -153,6 +152,52 @@ public class AccountServiceImpl implements AccountService {
 
         transactionRepository.save(transaction);
         return AccountWithdrawDto.Response.of(account, transaction);
+    }
+
+    @Transactional
+    @Override
+    public AccountTransferDto.Response transfer(AccountTransferDto.Request request, Long userId) {
+        // check accounts
+        if (request.getWithdrawAccountNumber().equals(request.getDepositAccountNumber())){
+            throw new CustomApiException("You can't send money to the same account. " +
+                    "Please choose a different account for the deposit.");
+        }
+        // check deposit amount
+        if (request.getAmount() <= 0) {
+            throw new CustomApiException("You can't deposit 0 or less amount.");
+        }
+        // check withdraw account number
+        Account withdrawAccount = accountRepository.findByNumber(request.getWithdrawAccountNumber())
+                .orElseThrow(()-> new CustomApiException("Account not found."));
+        // check deposit account number
+        Account depositAccount = accountRepository.findByNumber(request.getDepositAccountNumber())
+                .orElseThrow(()-> new CustomApiException("Account not found."));
+        // check authority
+        if (!withdrawAccount.getUser().getId().equals(userId)) {
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to delete this account");
+        }
+        // verify password
+        if (!passwordEncoder.matches(request.getWithdrawAccountPw(), withdrawAccount.getPassword())) {
+            throw new CustomApiException("Incorrect account password.");
+        }
+        // transfer
+        withdrawAccount.withdraw(request.getAmount()); // withdraw
+        depositAccount.deposit(request.getAmount()); // deposit
+
+        // create transaction info(history)
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(withdrawAccount)
+                .depositAccount(depositAccount)
+                .amount(request.getAmount())
+                .withdrawAccountBalance(withdrawAccount.getBalance())
+                .depositAccountBalance(depositAccount.getBalance())
+                .transactionType(TransactionType.TRANSFER)
+                .sender(String.valueOf(request.getWithdrawAccountNumber()))
+                .receiver(String.valueOf(request.getDepositAccountNumber()))
+                .build();
+
+        transactionRepository.save(transaction);
+        return AccountTransferDto.Response.of(withdrawAccount, transaction);
     }
 
     private Long generateAccountNumber() {

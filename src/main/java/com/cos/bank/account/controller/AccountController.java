@@ -1,10 +1,7 @@
 package com.cos.bank.account.controller;
 
 
-import com.cos.bank.account.dto.AccountDepositDto;
-import com.cos.bank.account.dto.AccountListDto;
-import com.cos.bank.account.dto.AccountWithdrawDto;
-import com.cos.bank.account.dto.RegisterAccountDto;
+import com.cos.bank.account.dto.*;
 import com.cos.bank.account.service.AccountService;
 import com.cos.bank.config.auth.LoginUser;
 import com.cos.bank.util.ResponseDto;
@@ -24,7 +21,7 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    // API for creating account
+    // creating account API
     @PostMapping("/account")
     public ResponseEntity<?> createAccount(
             @RequestBody @Valid RegisterAccountDto.Request request,
@@ -36,7 +33,7 @@ public class AccountController {
                 new ResponseDto<>(1, "Account register succeeded.", response), HttpStatus.OK);
     }
 
-    // API for reading user's account list
+    // reading user's account list API
     @GetMapping("/accounts")
     public ResponseEntity<?> getAllAccountsByUser(
             @AuthenticationPrincipal LoginUser loginUser){
@@ -45,7 +42,7 @@ public class AccountController {
                 new ResponseDto<>(1, "User accounts retrieved successfully.", accountListDto), HttpStatus.OK);
     }
 
-    // API for deleting account
+    // deleting account API
     @DeleteMapping("/accounts/{accountId}")
     public ResponseEntity<?> deleteAccount(
             @PathVariable Long accountId,
@@ -55,7 +52,7 @@ public class AccountController {
                 new ResponseDto<>(1, "Account deletion succeeded.", null), HttpStatus.OK);
     }
 
-    // API for ATM deposit
+    // ATM deposit API
     @PostMapping("/deposit")
     public ResponseEntity<?> deposit(
             @RequestBody @Valid AccountDepositDto.Request request,
@@ -65,7 +62,7 @@ public class AccountController {
                 new ResponseDto<>(1, "Deposit succeeded.", response), HttpStatus.OK);
     }
 
-    // API for ATM withdrawal
+    // ATM withdrawal API
     @PostMapping("/account/withdrawal")
     public ResponseEntity<?> withdraw(
             @RequestBody @Valid AccountWithdrawDto.Request request,
@@ -76,4 +73,14 @@ public class AccountController {
                 new ResponseDto<>(1,"Withdrawal succeeded", response),HttpStatus.OK);
     }
 
+    // transferring API
+    @PostMapping("/account/transfer")
+    public ResponseEntity<?> transfer(
+            @RequestBody @Valid AccountTransferDto.Request request,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal LoginUser loginUser){
+        AccountTransferDto.Response response = accountService.transfer(request, loginUser.getUser().getId());
+        return new ResponseEntity<>(
+                new ResponseDto<>(1,"Transfer succeeded", response),HttpStatus.OK);
+    }
 }
