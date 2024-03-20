@@ -297,7 +297,6 @@ class AccountControllerTest extends DummyObject {
 
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("test check: " + responseBody);
-
         // then
         resultActions.andExpect(status().isOk());
     }

@@ -3,12 +3,14 @@ package com.cos.bank.account.dto;
 import com.cos.bank.account.domain.Account;
 import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
-import com.cos.bank.transaction.dto.TransactionDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 public class AccountTransferDto {
+
     @Getter
     @Setter
     @Builder
@@ -56,7 +58,46 @@ public class AccountTransferDto {
                     .withdrawAccountId(account.getId())
                     .withdrawAccountNumber(account.getNumber())
                     .withdrawAccountBalance(account.getBalance())
-                    .transactionDto(TransactionDto.of(transaction))
+                    .transactionDto(AccountTransferDto.TransactionDto.of(transaction))
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionDto {
+
+        private Long id;
+        private Double amount;
+        private TransactionType transactionType;
+        private String sender;
+        private String receiver;
+        private String phone;
+        private String memo;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+
+        @JsonIgnore
+        private Double depositAccountBalance;
+        @JsonIgnore
+        private Double withdrawAccountBalance;
+
+        public static AccountTransferDto.TransactionDto of(Transaction transaction) {
+            return AccountTransferDto.TransactionDto.builder()
+                    .id(transaction.getId())
+                    .amount(transaction.getAmount())
+                    .transactionType(transaction.getTransactionType())
+                    .sender(transaction.getSender())
+                    .receiver(transaction.getReceiver())
+                    .phone(transaction.getPhone())
+                    .memo(transaction.getMemo())
+                    .createdAt(transaction.getCreatedAt())
+                    .updatedAt(transaction.getUpdatedAt())
+                    .depositAccountBalance(transaction.getDepositAccountBalance()) // only used for test
+                    .withdrawAccountBalance(transaction.getWithdrawAccountBalance()) // only used for test
                     .build();
         }
     }

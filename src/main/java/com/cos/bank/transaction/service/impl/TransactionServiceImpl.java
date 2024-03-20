@@ -5,6 +5,7 @@ import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.handler.exception.CustomApiException;
 import com.cos.bank.handler.exception.CustomForbiddenException;
 import com.cos.bank.transaction.domain.Transaction;
+import com.cos.bank.transaction.dto.TransactionDetailDto;
 import com.cos.bank.transaction.dto.TransactionListDto;
 import com.cos.bank.transaction.repository.TransactionRepository;
 import com.cos.bank.transaction.service.TransactionService;
@@ -26,13 +27,27 @@ public class TransactionServiceImpl implements TransactionService {
         // find account
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new CustomApiException("Account not found."));
-
         // check authority
         if (!account.getUser().getId().equals(userId)) {
-            throw new CustomForbiddenException("Unauthorized: You do not have permission to read transactions");
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to read the transaction list");
         }
         // get transactions
         List<Transaction> transactions = transactionRepository.findTransactionList(accountId, transactionType, page);
         return TransactionListDto.of(transactions, accountId);
+    }
+
+    @Override
+    public TransactionDetailDto.Response getTransaction(Long accountId, Long transactionId, Long userId) {
+        // find account
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new CustomApiException("Account not found."));
+        // check authority
+        if (!account.getUser().getId().equals(userId)) {
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to read the transaction");
+        }
+        // get transaction
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(()-> new CustomApiException("Transaction not found."));
+        return TransactionDetailDto.Response.of(transaction, accountId);
     }
 }

@@ -2,11 +2,11 @@ package com.cos.bank.transaction.controller;
 
 
 import com.cos.bank.config.auth.LoginUser;
+import com.cos.bank.transaction.dto.TransactionDetailDto;
 import com.cos.bank.transaction.dto.TransactionListDto;
 import com.cos.bank.transaction.service.TransactionService;
 import com.cos.bank.util.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,19 @@ public class TransactionController {
 
         TransactionListDto transactionList
                 = transactionService.getTransactionList(loginUser.getUser().getId(), accountId, transactionType, page);
-        return new ResponseEntity<>(
-                new ResponseDto<>(1, "Transactions retrieved successfully.", transactionList), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1, "Transactions retrieved successfully.", transactionList));
+    }
+
+    @GetMapping("/accounts/{accountId}/transactions/{transactionId}")
+    public ResponseEntity<?> getTransaction(
+            @PathVariable Long accountId,
+            @PathVariable Long transactionId,
+            @AuthenticationPrincipal LoginUser loginUser){
+
+        TransactionDetailDto.Response response =
+                transactionService.getTransaction(accountId, transactionId, loginUser.getUser().getId());
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1, "Transaction retrieved successfully.", response));
     }
 }

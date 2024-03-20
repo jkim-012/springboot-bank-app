@@ -3,10 +3,14 @@ package com.cos.bank.account.dto;
 import com.cos.bank.account.domain.Account;
 import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
-import com.cos.bank.transaction.dto.TransactionDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 
 public class AccountDepositDto {
@@ -16,7 +20,7 @@ public class AccountDepositDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Request{
+    public static class Request {
 
         @NotNull(message = "Deposit account number is a required field.")
         @Digits(integer = 10, fraction = 0, message = "Deposit account number must be exactly 10 digits.")
@@ -41,7 +45,7 @@ public class AccountDepositDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Response{
+    public static class Response {
         private Long depositAccountId;
         private Long depositAccountNumber;
         private TransactionDto transactionDto;
@@ -50,7 +54,46 @@ public class AccountDepositDto {
             return Response.builder()
                     .depositAccountId(account.getId())
                     .depositAccountNumber(account.getNumber())
-                    .transactionDto(TransactionDto.of(transaction))
+                    .transactionDto(AccountDepositDto.TransactionDto.of(transaction))
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionDto {
+
+        private Long id;
+        private Double amount;
+        private TransactionType transactionType;
+        private String sender;
+        private String receiver;
+        private String phone;
+        private String memo;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+
+        @JsonIgnore
+        private Double depositAccountBalance;
+        @JsonIgnore
+        private Double withdrawAccountBalance;
+
+        public static AccountDepositDto.TransactionDto of(Transaction transaction) {
+            return AccountDepositDto.TransactionDto.builder()
+                    .id(transaction.getId())
+                    .amount(transaction.getAmount())
+                    .transactionType(transaction.getTransactionType())
+                    .sender(transaction.getSender())
+                    .receiver(transaction.getReceiver())
+                    .phone(transaction.getPhone())
+                    .memo(transaction.getMemo())
+                    .createdAt(transaction.getCreatedAt())
+                    .updatedAt(transaction.getUpdatedAt())
+                    .depositAccountBalance(transaction.getDepositAccountBalance()) // only used for test
+                    .withdrawAccountBalance(transaction.getWithdrawAccountBalance()) // only used for test
                     .build();
         }
     }
