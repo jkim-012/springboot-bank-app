@@ -7,7 +7,7 @@ This is a backend project that develops server-side functionality to support the
 
 
 # ERD
-![ERD](./doc/bank_erd.png)
+![ERD](./img/bank_erd.png)
 
 # Features 
 ## 🦱 Member Management
