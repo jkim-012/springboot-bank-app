@@ -21,9 +21,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Sql("classpath:db/teardown.sql")
 @AutoConfigureMockMvc
@@ -73,7 +73,24 @@ class TransactionControllerTest extends DummyObject {
         resultActions.andExpect(jsonPath("$.data.transactionDtos[1].balance").value(80));
         resultActions.andExpect(jsonPath("$.data.transactionDtos[2].balance").value(70));
         resultActions.andExpect(jsonPath("$.data.transactionDtos[3].balance").value(80));
+    }
 
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void find_transaction_test() throws Exception {
+        // given
+        Long accountId = 1L;
+        Long transactionId = 1L;
+
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(get("/api/accounts/" + accountId + "/transactions/" + transactionId));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("test check: " + responseBody); //withdrawTransaction1 from dataSetting()
+
+        // then
+        resultActions.andExpect(status().isOk());
     }
 
     private void dataSetting() {
