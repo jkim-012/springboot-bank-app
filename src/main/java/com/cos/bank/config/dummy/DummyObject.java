@@ -1,6 +1,7 @@
 package com.cos.bank.config.dummy;
 
 import com.cos.bank.account.domain.Account;
+import com.cos.bank.account.repository.AccountRepository;
 import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
 import com.cos.bank.user.domain.Role;
@@ -51,7 +52,7 @@ public class DummyObject {
         return Account.builder()
                 .number(number)
                 .password(encodedPw)
-                .balance(10.0)
+                .balance(100.0)
                 .user(user)
                 .build();
     }
@@ -104,4 +105,77 @@ public class DummyObject {
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
+
+    protected Transaction newWithdrawTransaction(Account account, AccountRepository accountRepository) {
+        account.withdraw(10.0);
+
+        // Repository Test - dirty checking (o)
+        // Controller Test - dirty checking (x)
+        if (accountRepository != null) {
+            accountRepository.save(account);
+        }
+        return Transaction.builder()
+                .withdrawAccount(account)
+                .depositAccount(null)
+                .amount(10.0)
+                .withdrawAccountBalance(account.getBalance())
+                .depositAccountBalance(null)
+                .transactionType(TransactionType.WITHDRAW)
+                .sender(String.valueOf(account.getNumber()))
+                .receiver(null)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    protected Transaction newDepositTransaction(Account account, AccountRepository accountRepository) {
+        account.deposit(10.0);
+
+        // Repository Test - dirty checking (o)
+        // Controller Test - dirty checking (x)
+        if (accountRepository != null) {
+            accountRepository.save(account);
+        }
+
+        return Transaction.builder()
+                .withdrawAccount(null)
+                .depositAccount(account)
+                .amount(10.0)
+                .withdrawAccountBalance(null)
+                .depositAccountBalance(account.getBalance())
+                .transactionType(TransactionType.DEPOSIT)
+                .sender("ATM")
+                .receiver(String.valueOf(account.getNumber()))
+                .phone("1234567890")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    protected Transaction newTransferTransaction(Account withdrawAccount, Account depositAccount,
+                                                 AccountRepository accountRepository) {
+        withdrawAccount.withdraw(10.0);
+        depositAccount.deposit(10.0);
+
+        // Repository Test - dirty checking (o)
+        // Controller Test - dirty checking (x)
+        if (accountRepository != null) {
+            accountRepository.save(withdrawAccount);
+            accountRepository.save(depositAccount);
+        }
+
+        return Transaction.builder()
+                .withdrawAccount(withdrawAccount)
+                .depositAccount(depositAccount)
+                .withdrawAccountBalance(withdrawAccount.getBalance())
+                .depositAccountBalance(depositAccount.getBalance())
+                .amount(10.0)
+                .transactionType(TransactionType.TRANSFER)
+                .sender(String.valueOf(withdrawAccount.getNumber()))
+                .receiver(String.valueOf(depositAccount.getNumber()))
+                .build();
+    }
+
+
+
 }

@@ -126,7 +126,8 @@ public class AccountServiceImpl implements AccountService {
 
         // check authority
         if (!account.getUser().getId().equals(userId)) {
-            throw new CustomForbiddenException("Unauthorized: You do not have permission to withdraw from this account");
+            throw new CustomForbiddenException
+                    ("Unauthorized: You do not have permission to withdraw from this account");
         }
         // verify password
         if (!passwordEncoder.matches(request.getPassword(), account.getPassword())) {
@@ -174,7 +175,7 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(()-> new CustomApiException("Account not found."));
         // check authority
         if (!withdrawAccount.getUser().getId().equals(userId)) {
-            throw new CustomForbiddenException("Unauthorized: You do not have permission to delete this account");
+            throw new CustomForbiddenException("Unauthorized: You do not have permission to transfer from this account");
         }
         // verify password
         if (!passwordEncoder.matches(request.getWithdrawAccountPw(), withdrawAccount.getPassword())) {

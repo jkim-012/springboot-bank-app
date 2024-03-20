@@ -90,6 +90,7 @@ public class SecurityConfig {
         configuration.addAllowedMethod("*");
         configuration.addAllowedOriginPattern("*");
         configuration.setAllowCredentials(true);
+        configuration.addExposedHeader("Authorization"); // should allow front to get header info
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
