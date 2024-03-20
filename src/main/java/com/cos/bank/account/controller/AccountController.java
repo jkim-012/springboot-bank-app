@@ -36,7 +36,6 @@ public class AccountController {
     // reading user's account details
     @GetMapping("/accounts/{accountId}")
     public ResponseEntity<?> getAccount(
-
             @PathVariable Long accountId,
             @AuthenticationPrincipal LoginUser loginUser){
 

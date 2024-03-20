@@ -285,4 +285,33 @@ class AccountControllerTest extends DummyObject {
         assertThrows(CustomApiException.class, () -> accountService.transfer(request, 1L));
     }
 
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void get_account_success_test() throws Exception {
+        // given
+        Long accountId = 1L;
+
+        // when
+        ResultActions resultActions =
+                mockMvc.perform(get("/api/accounts/" + accountId));
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("test check: " + responseBody);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void get_account_fail_test() throws Exception {
+        // given
+        Long accountId = 3L;
+        Long userId = 1L;
+
+        // when, then
+        // account Id doesn't exist, will throw exception
+        assertThrows(CustomApiException.class, () -> accountService.getAccount(accountId, userId));
+    }
+
 }
