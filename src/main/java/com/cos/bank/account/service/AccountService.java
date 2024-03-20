@@ -10,4 +10,5 @@ public interface AccountService {
     AccountDepositDto.Response deposit(AccountDepositDto.Request request);
     AccountWithdrawDto.Response withdraw(AccountWithdrawDto.Request request, Long userId);
     AccountTransferDto.Response transfer(AccountTransferDto.Request request, Long userId);
+    AccountDetailDto.Response getAccount(Long accountId, Long userId);
 }

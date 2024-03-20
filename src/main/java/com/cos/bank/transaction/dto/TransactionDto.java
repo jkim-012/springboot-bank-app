@@ -1,7 +1,5 @@
 package com.cos.bank.transaction.dto;
 
-import com.cos.bank.account.domain.Account;
-import com.cos.bank.account.dto.AccountDto;
 import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
 import com.fasterxml.jackson.annotation.JsonIgnore;

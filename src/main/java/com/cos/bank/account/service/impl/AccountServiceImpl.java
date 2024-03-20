@@ -56,6 +56,15 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
         return RegisterAccountDto.Response.of(account);
     }
+    @Override
+    public AccountDetailDto.Response getAccount(Long accountId, Long userId) {
+        // check if user exists
+        User user = getUser(userId);
+        // get account
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(()-> new CustomApiException("Account not found."));
+        return AccountDetailDto.Response.of(account);
+    }
 
     @Override
     public AccountListDto getAllAccounts(Long userId) {

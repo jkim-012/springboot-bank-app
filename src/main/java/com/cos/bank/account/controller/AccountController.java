@@ -29,14 +29,28 @@ public class AccountController {
             @AuthenticationPrincipal LoginUser loginUser) {
 
         RegisterAccountDto.Response response = accountService.createAccount(request, loginUser.getUser().getId());
-        return new ResponseEntity<>(
-                new ResponseDto<>(1, "Account register succeeded.", response), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1, "Account register succeeded.", response));
     }
+
+    // reading user's account details
+    @GetMapping("/accounts/{accountId}")
+    public ResponseEntity<?> getAccount(
+
+            @PathVariable Long accountId,
+            @AuthenticationPrincipal LoginUser loginUser){
+
+        AccountDetailDto.Response response = accountService.getAccount(accountId, loginUser.getUser().getId());
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1, "User account retrieved successfully.", response));
+    }
+
 
     // reading user's account list API
     @GetMapping("/accounts")
     public ResponseEntity<?> getAllAccountsByUser(
             @AuthenticationPrincipal LoginUser loginUser){
+
         AccountListDto accountListDto = accountService.getAllAccounts(loginUser.getUser().getId());
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "User accounts retrieved successfully.", accountListDto), HttpStatus.OK);
@@ -47,6 +61,7 @@ public class AccountController {
     public ResponseEntity<?> deleteAccount(
             @PathVariable Long accountId,
             @AuthenticationPrincipal LoginUser loginUser){
+
         accountService.deleteAccount(accountId, loginUser.getUser().getId());
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "Account deletion succeeded.", null), HttpStatus.OK);
@@ -57,6 +72,7 @@ public class AccountController {
     public ResponseEntity<?> deposit(
             @RequestBody @Valid AccountDepositDto.Request request,
             BindingResult bindingResult){
+
         AccountDepositDto.Response response = accountService.deposit(request);
         return new ResponseEntity<>(
                 new ResponseDto<>(1, "Deposit succeeded.", response), HttpStatus.OK);
@@ -68,9 +84,10 @@ public class AccountController {
             @RequestBody @Valid AccountWithdrawDto.Request request,
             BindingResult bindingResult,
             @AuthenticationPrincipal LoginUser loginUser){
+
         AccountWithdrawDto.Response response = accountService.withdraw(request, loginUser.getUser().getId());
         return new ResponseEntity<>(
-                new ResponseDto<>(1,"Withdrawal succeeded", response),HttpStatus.OK);
+                new ResponseDto<>(1,"Withdrawal succeeded.", response),HttpStatus.OK);
     }
 
     // transferring API
@@ -79,8 +96,10 @@ public class AccountController {
             @RequestBody @Valid AccountTransferDto.Request request,
             BindingResult bindingResult,
             @AuthenticationPrincipal LoginUser loginUser){
+
         AccountTransferDto.Response response = accountService.transfer(request, loginUser.getUser().getId());
         return new ResponseEntity<>(
-                new ResponseDto<>(1,"Transfer succeeded", response),HttpStatus.OK);
+                new ResponseDto<>(1,"Transfer succeeded.", response),HttpStatus.OK);
     }
+
 }
