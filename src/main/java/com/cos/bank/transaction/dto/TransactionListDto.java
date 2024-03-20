@@ -2,6 +2,7 @@ package com.cos.bank.transaction.dto;
 
 import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
+import com.cos.bank.util.CustomDataFormatter;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -40,7 +41,7 @@ public class TransactionListDto {
         private String sender;
         private String receiver;
         private String phone;
-        private LocalDateTime createdAt;
+        private String createdAt;
         private BigDecimal balance;
 
         public static TransactionDto of(Transaction transaction, Long accountId) {
@@ -67,7 +68,7 @@ public class TransactionListDto {
                     .sender(transaction.getSender())
                     .receiver(transaction.getReceiver())
                     .phone(transaction.getPhone())
-                    .createdAt(transaction.getCreatedAt())
+                    .createdAt(CustomDataFormatter.of(transaction.getCreatedAt()))
                     .balance(balance)
                     .build();
         }

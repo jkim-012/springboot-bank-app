@@ -2,6 +2,7 @@ package com.cos.bank.transaction.dto;
 
 import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
+import com.cos.bank.util.CustomDataFormatter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -24,8 +25,8 @@ public class TransactionDetailDto {
         private String receiver;
         private String phone;
         private String memo;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
+        private String createdAt;
+        private String updatedAt;
         private BigDecimal balance;
 
         @JsonIgnore
@@ -59,8 +60,8 @@ public class TransactionDetailDto {
                     .receiver(transaction.getReceiver())
                     .phone(transaction.getPhone())
                     .memo(transaction.getMemo())
-                    .createdAt(transaction.getCreatedAt())
-                    .updatedAt(transaction.getUpdatedAt())
+                    .createdAt(CustomDataFormatter.of(transaction.getCreatedAt())) // yyyy-MM-dd HH:mm:ss
+                    .updatedAt(CustomDataFormatter.of(transaction.getUpdatedAt())) // yyyy-MM-dd HH:mm:ss
                     .depositAccountBalance(transaction.getDepositAccountBalance()) // only used for test
                     .withdrawAccountBalance(transaction.getWithdrawAccountBalance()) // only used for test
                     .balance(balance)
