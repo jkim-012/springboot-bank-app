@@ -14,7 +14,6 @@ This is a backend project that develops server-side functionality to support the
 
 
 # Tech Stack
-## Programming Languages
 ### Programming Languages
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
 
