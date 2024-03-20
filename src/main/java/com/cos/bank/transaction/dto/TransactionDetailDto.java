@@ -5,6 +5,7 @@ import com.cos.bank.transaction.domain.TransactionType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class TransactionDetailDto {
@@ -18,23 +19,23 @@ public class TransactionDetailDto {
 
         private Long id;
         private TransactionType transactionType;
-        private Double amount;
+        private BigDecimal amount;
         private String sender;
         private String receiver;
         private String phone;
         private String memo;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        private Double balance;
+        private BigDecimal balance;
 
         @JsonIgnore
-        private Double depositAccountBalance;
+        private BigDecimal depositAccountBalance;
         @JsonIgnore
-        private Double withdrawAccountBalance;
+        private BigDecimal withdrawAccountBalance;
 
         public static TransactionDetailDto.Response of(Transaction transaction, Long accountId) {
 
-            Double balance = 0.0;
+            BigDecimal balance = BigDecimal.valueOf(0.0);
             // (withdraw account = value, deposit account = null)
             if (transaction.getDepositAccount() == null) {
                 balance = transaction.getWithdrawAccountBalance();

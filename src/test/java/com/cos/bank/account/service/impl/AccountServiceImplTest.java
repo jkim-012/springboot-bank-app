@@ -23,6 +23,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -89,8 +90,8 @@ class AccountServiceImplTest extends DummyObject {
 
         // stub 2 - mocking account repository to return a list of accounts for the user
         List<Account> accounts = new ArrayList<>();
-        accounts.add(newMockAccount(1L, 1234567891L, 10.0, user));
-        accounts.add(newMockAccount(2L, 1234567892L, 20.0, user));
+        accounts.add(newMockAccount(1L, 1234567891L, BigDecimal.valueOf(10.0), user));
+        accounts.add(newMockAccount(2L, 1234567892L, BigDecimal.valueOf(20.0), user));
         when(accountRepository.findByUser_Id(userId)).thenReturn(accounts);
 
         // when
@@ -138,7 +139,7 @@ class AccountServiceImplTest extends DummyObject {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // stub 2 - mocking account repository to return account
-        Account account = newMockAccount(1L, 1234567891L, 10.0, user);
+        Account account = newMockAccount(1L, 1234567891L, BigDecimal.valueOf(10.0), user);
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
 
         // when
@@ -177,7 +178,7 @@ class AccountServiceImplTest extends DummyObject {
         // stub 1 - mocking account repository return the deposit account
         // create user and its account
         User user = newMockUser(1L, "ssar", "first", "last");
-        Account account = newMockAccount(1L, 1234567891L, 10.0, user);
+        Account account = newMockAccount(1L, 1234567891L, BigDecimal.valueOf(10.0), user);
         when(accountRepository.findByNumber(request.getDepositAccountNumber())).thenReturn(Optional.of(account));
 
         // stub 2 - mocking transaction repository to save transaction
@@ -199,7 +200,7 @@ class AccountServiceImplTest extends DummyObject {
     void withdraw_success_test() {
         // given
         AccountWithdrawDto.Request request = AccountWithdrawDto.Request.builder()
-                .amount(10.0)
+                .amount(BigDecimal.valueOf(10.0))
                 .withdrawAccountNumber(1234567891L)
                 .password("1234")
                 .transactionType(TransactionType.WITHDRAW)
@@ -208,11 +209,11 @@ class AccountServiceImplTest extends DummyObject {
         // stub 1 - mocking account repository return the deposit account
         // create user and its account
         User user = newMockUser(1L, "ssar", "first", "last");
-        Account account = newMockAccount(1L, 1234567891L, 100.0, user);
+        Account account = newMockAccount(1L, 1234567891L, BigDecimal.valueOf(100.0), user);
         when(accountRepository.findByNumber(request.getWithdrawAccountNumber())).thenReturn(Optional.of(account));
 
         // stub 2 - mocking transaction repository to save transaction
-        Transaction transaction = newMockWithdrawTransaction(1L, newMockAccount(1L, 1234567891L, 100.0, user));
+        Transaction transaction = newMockWithdrawTransaction(1L, newMockAccount(1L, 1234567891L, BigDecimal.valueOf(100.0), user));
         when(transactionRepository.save(any())).thenReturn(transaction);
 
         // when

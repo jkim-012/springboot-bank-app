@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class AccountTransferDto {
@@ -32,7 +33,7 @@ public class AccountTransferDto {
         private String withdrawAccountPw;
 
         @NotNull(message = "Transfer amount is a required field.")
-        private Double amount;
+        private BigDecimal amount;
 
         @NotNull(message = "Transaction type is a required field.")
         private TransactionType transactionType; // TRANSFER
@@ -50,7 +51,7 @@ public class AccountTransferDto {
         // response for a withdrawal account's owner
         private Long withdrawAccountId;
         private Long withdrawAccountNumber;
-        private Double withdrawAccountBalance;
+        private BigDecimal withdrawAccountBalance;
         private TransactionDto transactionDto;
 
         public static AccountTransferDto.Response of(Account account, Transaction transaction) {
@@ -71,7 +72,7 @@ public class AccountTransferDto {
     public static class TransactionDto {
 
         private Long id;
-        private Double amount;
+        private BigDecimal amount;
         private TransactionType transactionType;
         private String sender;
         private String receiver;
@@ -81,9 +82,9 @@ public class AccountTransferDto {
         private LocalDateTime updatedAt;
 
         @JsonIgnore
-        private Double depositAccountBalance;
+        private BigDecimal depositAccountBalance;
         @JsonIgnore
-        private Double withdrawAccountBalance;
+        private BigDecimal withdrawAccountBalance;
 
         public static AccountTransferDto.TransactionDto of(Transaction transaction) {
             return AccountTransferDto.TransactionDto.builder()

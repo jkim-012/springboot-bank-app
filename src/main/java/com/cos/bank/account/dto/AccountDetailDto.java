@@ -3,6 +3,8 @@ package com.cos.bank.account.dto;
 import com.cos.bank.account.domain.Account;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 public class AccountDetailDto {
 
     @Getter
@@ -14,7 +16,7 @@ public class AccountDetailDto {
 
         private Long id;
         private Long number;
-        private Double balance;
+        private BigDecimal balance;
 
         public static AccountDetailDto.Response of(Account account){
             return Response.builder()

@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
@@ -32,7 +33,7 @@ public class Account {
     private String password;
 
     @Column(nullable = false)
-    private Double balance;
+    private BigDecimal balance;
 
     @CreatedDate
     @Column(nullable = false)
@@ -45,10 +46,11 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public void deposit(Double amount) {
-        balance += amount;
+    public void deposit(BigDecimal amount) {
+        balance = balance.add(amount);
     }
-    public void withdraw(Double amount) {
-        balance -= amount;
+
+    public void withdraw(BigDecimal amount) {
+        balance = balance.subtract(amount);
     }
 }

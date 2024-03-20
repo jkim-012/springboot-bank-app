@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
@@ -49,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = Account.builder()
                 .number(accountNumber)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .balance(10.0) // minimum $10
+                .balance(BigDecimal.valueOf(10.0)) // minimum $10
                 .user(user)
                 .build();
 
@@ -94,10 +95,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public AccountDepositDto.Response deposit(AccountDepositDto.Request request) {
-        // check deposit amount
-        if (request.getAmount() <= 0) {
-            throw new CustomApiException("You can't deposit 0 or less amount.");
-        }
+        // check deposit amount - should be greater than 0
+        validateAmount(request.getAmount());
         // find account
         Account account = accountRepository.findByNumber(request.getDepositAccountNumber())
                 .orElseThrow(() -> new CustomApiException("Account not found."));
@@ -122,13 +121,12 @@ public class AccountServiceImpl implements AccountService {
         return AccountDepositDto.Response.of(account, transaction);
     }
 
+
     @Transactional
     @Override
     public AccountWithdrawDto.Response withdraw(AccountWithdrawDto.Request request, Long userId) {
-        // check deposit amount
-        if (request.getAmount() <= 0) {
-            throw new CustomApiException("You can't deposit 0 or less amount.");
-        }
+        // check withdrawal amount - should be greater than 0
+        validateAmount(request.getAmount());
         // find account
         Account account = accountRepository.findByNumber(request.getWithdrawAccountNumber())
                 .orElseThrow(() -> new CustomApiException("Account not found."));
@@ -143,7 +141,7 @@ public class AccountServiceImpl implements AccountService {
             throw new CustomApiException("Incorrect account password.");
         }
         // current balance check (should have more than withdrawal amount)
-        if (account.getBalance() < request.getAmount()){
+        if (account.getBalance().compareTo(request.getAmount()) < 0) {
             throw new CustomApiException("Insufficient funds.");
         }
         // withdraw
@@ -167,15 +165,14 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public AccountTransferDto.Response transfer(AccountTransferDto.Request request, Long userId) {
-        // check accounts
+        // check accounts if both accounts are the same account
         if (request.getWithdrawAccountNumber().equals(request.getDepositAccountNumber())){
             throw new CustomApiException("You can't send money to the same account. " +
                     "Please choose a different account for the deposit.");
         }
-        // check deposit amount
-        if (request.getAmount() <= 0) {
-            throw new CustomApiException("You can't deposit 0 or less amount.");
-        }
+        // check transfer amount - should be greater than 0
+        validateAmount(request.getAmount());
+
         // check withdraw account number
         Account withdrawAccount = accountRepository.findByNumber(request.getWithdrawAccountNumber())
                 .orElseThrow(()-> new CustomApiException("Account not found."));
@@ -210,6 +207,15 @@ public class AccountServiceImpl implements AccountService {
         return AccountTransferDto.Response.of(withdrawAccount, transaction);
     }
 
+    private static void validateAmount(BigDecimal amount) {
+        //check amount
+        //Negative if the BigDecimal is less than zero.
+        //Zero if the BigDecimal is equal to zero.
+        //Positive if the BigDecimal is greater than zero.
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CustomApiException("You can't deposit 0 or less amount.");
+        }
+    }
     private Long generateAccountNumber() {
         Random random = new Random();
         long number = 1000000000L + random.nextInt(900000000); // generate a random number in the range [1000000000, 1899999999]

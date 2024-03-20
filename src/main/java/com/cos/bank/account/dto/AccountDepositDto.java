@@ -10,6 +10,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -27,7 +28,7 @@ public class AccountDepositDto {
         private Long depositAccountNumber;
 
         @NotNull(message = "Deposit amount is a required field.")
-        private Double amount;
+        private BigDecimal amount;
 
         @NotNull(message = "Transaction type is a required field.")
         private TransactionType transactionType; // DEPOSIT
@@ -67,7 +68,7 @@ public class AccountDepositDto {
     public static class TransactionDto {
 
         private Long id;
-        private Double amount;
+        private BigDecimal amount;
         private TransactionType transactionType;
         private String sender;
         private String receiver;
@@ -77,9 +78,9 @@ public class AccountDepositDto {
         private LocalDateTime updatedAt;
 
         @JsonIgnore
-        private Double depositAccountBalance;
+        private BigDecimal depositAccountBalance;
         @JsonIgnore
-        private Double withdrawAccountBalance;
+        private BigDecimal withdrawAccountBalance;
 
         public static AccountDepositDto.TransactionDto of(Transaction transaction) {
             return AccountDepositDto.TransactionDto.builder()

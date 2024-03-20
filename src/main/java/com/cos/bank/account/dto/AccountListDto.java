@@ -4,6 +4,7 @@ import com.cos.bank.account.domain.Account;
 import com.cos.bank.user.domain.User;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class AccountListDto {
     public static class AccountDto {
         private Long id;
         private Long number;
-        private Double balance;
+        private BigDecimal balance;
 
         public static AccountDto of(Account account){
             return AccountDto.builder()

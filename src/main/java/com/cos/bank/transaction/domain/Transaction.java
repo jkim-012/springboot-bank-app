@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
@@ -31,10 +32,10 @@ public class Transaction {
     private Account depositAccount;
 
     @Column(nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
-    private Double withdrawAccountBalance; // tells balance after each withdraw transaction
-    private Double depositAccountBalance; // tells balance after each deposit transaction
+    private BigDecimal withdrawAccountBalance; // tells balance after each withdraw transaction
+    private BigDecimal depositAccountBalance; // tells balance after each deposit transaction
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;

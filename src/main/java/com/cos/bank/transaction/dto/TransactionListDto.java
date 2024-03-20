@@ -4,6 +4,7 @@ import com.cos.bank.transaction.domain.Transaction;
 import com.cos.bank.transaction.domain.TransactionType;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +36,15 @@ public class TransactionListDto {
 
         private Long id;
         private TransactionType transactionType;
-        private Double amount;
+        private BigDecimal amount;
         private String sender;
         private String receiver;
         private String phone;
         private LocalDateTime createdAt;
-        private Double balance;
+        private BigDecimal balance;
 
         public static TransactionDto of(Transaction transaction, Long accountId) {
-            Double balance = 0.0;
+            BigDecimal balance = BigDecimal.valueOf(0.0);
             // (withdraw account = value, deposit account = null)
             if (transaction.getDepositAccount() == null) {
                 balance = transaction.getWithdrawAccountBalance();

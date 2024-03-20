@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 public class RegisterAccountDto {
 
@@ -32,7 +33,7 @@ public class RegisterAccountDto {
 
         private Long id;
         private Long number;
-        private Double balance;
+        private BigDecimal balance;
 
         public static Response of(Account account) {
             return Response.builder()
