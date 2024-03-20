@@ -6,7 +6,6 @@ import com.cos.bank.account.service.AccountService;
 import com.cos.bank.config.auth.LoginUser;
 import com.cos.bank.util.ResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -51,8 +50,8 @@ public class AccountController {
             @AuthenticationPrincipal LoginUser loginUser){
 
         AccountListDto accountListDto = accountService.getAllAccounts(loginUser.getUser().getId());
-        return new ResponseEntity<>(
-                new ResponseDto<>(1, "User accounts retrieved successfully.", accountListDto), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1, "User accounts retrieved successfully.", accountListDto));
     }
 
     // deleting account API
@@ -62,8 +61,8 @@ public class AccountController {
             @AuthenticationPrincipal LoginUser loginUser){
 
         accountService.deleteAccount(accountId, loginUser.getUser().getId());
-        return new ResponseEntity<>(
-                new ResponseDto<>(1, "Account deletion succeeded.", null), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body( new ResponseDto<>(1, "Account deletion succeeded.", null));
     }
 
     // ATM deposit API
@@ -73,8 +72,8 @@ public class AccountController {
             BindingResult bindingResult){
 
         AccountDepositDto.Response response = accountService.deposit(request);
-        return new ResponseEntity<>(
-                new ResponseDto<>(1, "Deposit succeeded.", response), HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1, "Deposit succeeded.", response));
     }
 
     // ATM withdrawal API
@@ -85,8 +84,8 @@ public class AccountController {
             @AuthenticationPrincipal LoginUser loginUser){
 
         AccountWithdrawDto.Response response = accountService.withdraw(request, loginUser.getUser().getId());
-        return new ResponseEntity<>(
-                new ResponseDto<>(1,"Withdrawal succeeded.", response),HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1,"Withdrawal succeeded.", response));
     }
 
     // transferring API
@@ -97,8 +96,8 @@ public class AccountController {
             @AuthenticationPrincipal LoginUser loginUser){
 
         AccountTransferDto.Response response = accountService.transfer(request, loginUser.getUser().getId());
-        return new ResponseEntity<>(
-                new ResponseDto<>(1,"Transfer succeeded.", response),HttpStatus.OK);
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(1,"Transfer succeeded.", response));
     }
 
 }

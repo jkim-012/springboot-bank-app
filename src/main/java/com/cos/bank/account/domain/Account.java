@@ -28,7 +28,7 @@ public class Account {
     @Column(unique = true, nullable = false, length = 10)
     private Long number;
 
-    @Column(nullable = false, length = 60)
+    @Column(nullable = false, length = 60) //encoded
     private String password;
 
     @Column(nullable = false)

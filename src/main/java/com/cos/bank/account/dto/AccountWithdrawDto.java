@@ -91,8 +91,8 @@ public class AccountWithdrawDto {
                     .memo(transaction.getMemo())
                     .createdAt(transaction.getCreatedAt())
                     .updatedAt(transaction.getUpdatedAt())
-                    .depositAccountBalance(transaction.getDepositAccountBalance()) // only used for test
-                    .withdrawAccountBalance(transaction.getWithdrawAccountBalance()) // only used for test
+                    .depositAccountBalance(transaction.getDepositAccountBalance()) // only used to test
+                    .withdrawAccountBalance(transaction.getWithdrawAccountBalance()) // only used to test
                     .build();
         }
     }
