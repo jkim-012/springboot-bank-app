@@ -38,7 +38,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
-
         return JoinDto.Response.of(user);
     }
 

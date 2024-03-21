@@ -183,6 +183,10 @@ public class AccountServiceImpl implements AccountService {
         if (!withdrawAccount.getUser().getId().equals(userId)) {
             throw new CustomForbiddenException("Unauthorized: You do not have permission to transfer from this account");
         }
+        // current balance check (should have more than transfer amount)
+        if (withdrawAccount.getBalance().compareTo(request.getAmount()) < 0) {
+            throw new CustomApiException("Insufficient funds.");
+        }
         // verify password
         if (!passwordEncoder.matches(request.getWithdrawAccountPw(), withdrawAccount.getPassword())) {
             throw new CustomApiException("Incorrect account password.");
