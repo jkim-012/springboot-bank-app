@@ -19,6 +19,9 @@ public class AccountDepositDto {
 
     @Getter
     @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Request {
 
         @NotNull(message = "Deposit account number is a required field.")

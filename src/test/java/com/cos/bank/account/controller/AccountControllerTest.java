@@ -29,6 +29,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -151,7 +153,7 @@ class AccountControllerTest extends DummyObject {
         // given
         AccountDepositDto.Request request = AccountDepositDto.Request.builder()
                 .depositAccountNumber(1234567891L) //ssar1's account number
-                .amount(1000.0)
+                .amount(BigDecimal.valueOf(1000.0))
                 .transactionType(TransactionType.DEPOSIT)
                 .phone("1234567890")
                 .build();
@@ -175,7 +177,7 @@ class AccountControllerTest extends DummyObject {
         // given
         AccountDepositDto.Request request = AccountDepositDto.Request.builder()
                 .depositAccountNumber(1234567894L) // this account number doesn't exist
-                .amount(1000.0)
+                .amount(BigDecimal.valueOf(1000.0))
                 .transactionType(TransactionType.DEPOSIT)
                 .phone("1234567890")
                 .build();
@@ -200,7 +202,7 @@ class AccountControllerTest extends DummyObject {
     void withdraw_success_test() throws Exception {
         // given
         AccountWithdrawDto.Request request = AccountWithdrawDto.Request.builder()
-                .amount(10.0)
+                .amount(BigDecimal.valueOf(10.0))
                 .withdrawAccountNumber(1234567891L) //ssar's account
                 .password("1234")
                 .transactionType(TransactionType.WITHDRAW)
@@ -225,7 +227,7 @@ class AccountControllerTest extends DummyObject {
     void withdraw_fail_test() throws Exception {
         // given
         AccountWithdrawDto.Request request = AccountWithdrawDto.Request.builder()
-                .amount(10.0)
+                .amount(BigDecimal.valueOf(10.0))
                 .withdrawAccountNumber(1234567894L) // account doesn't exist
                 .password("1234")
                 .transactionType(TransactionType.WITHDRAW)
@@ -244,7 +246,7 @@ class AccountControllerTest extends DummyObject {
     void transfer_success_test() throws Exception {
         // given
         AccountTransferDto.Request request = AccountTransferDto.Request.builder()
-                .amount(10.0)
+                .amount(BigDecimal.valueOf(10.0))
                 .withdrawAccountNumber(1234567891L) // ssar's account
                 .depositAccountNumber(1234567892L) // ssar2's account
                 .transactionType(TransactionType.TRANSFER)
@@ -270,7 +272,7 @@ class AccountControllerTest extends DummyObject {
     void transfer_fail_test() throws Exception {
         // given
         AccountTransferDto.Request request = AccountTransferDto.Request.builder()
-                .amount(10.0)
+                .amount(BigDecimal.valueOf(10.0))
                 .withdrawAccountNumber(1234567891L) // ssar's account
                 .depositAccountNumber(1234567892L) // ssar2's account
                 .transactionType(TransactionType.TRANSFER)

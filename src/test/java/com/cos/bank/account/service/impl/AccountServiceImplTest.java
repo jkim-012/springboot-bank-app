@@ -170,7 +170,7 @@ class AccountServiceImplTest extends DummyObject {
         // given
         AccountDepositDto.Request request = AccountDepositDto.Request.builder()
                 .depositAccountNumber(1234567891L) // this account number doesn't exist
-                .amount(1000.0)
+                .amount(BigDecimal.valueOf(1000.0))
                 .transactionType(TransactionType.DEPOSIT)
                 .phone("1234567890")
                 .build();
@@ -182,7 +182,8 @@ class AccountServiceImplTest extends DummyObject {
         when(accountRepository.findByNumber(request.getDepositAccountNumber())).thenReturn(Optional.of(account));
 
         // stub 2 - mocking transaction repository to save transaction
-        Transaction transaction = newMockDepositTransaction(1L, newMockAccount(1L, 1234567891L, 10.0, user));
+        Transaction transaction =
+                newMockDepositTransaction(1L, newMockAccount(1L, 1234567891L, BigDecimal.valueOf(10.0), user));
         when(transactionRepository.save(any())).thenReturn(transaction);
 
         // when,
@@ -213,7 +214,8 @@ class AccountServiceImplTest extends DummyObject {
         when(accountRepository.findByNumber(request.getWithdrawAccountNumber())).thenReturn(Optional.of(account));
 
         // stub 2 - mocking transaction repository to save transaction
-        Transaction transaction = newMockWithdrawTransaction(1L, newMockAccount(1L, 1234567891L, BigDecimal.valueOf(100.0), user));
+        Transaction transaction =
+                newMockWithdrawTransaction(1L, newMockAccount(1L, 1234567891L, BigDecimal.valueOf(100.0), user));
         when(transactionRepository.save(any())).thenReturn(transaction);
 
         // when
