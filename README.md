@@ -34,7 +34,7 @@ The project employs JUnit 5 for testing purposes. Unit tests are implemented to 
 <img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=white">
 
 ### Development Tools
-<img src="https://img.shields.io/badge/H2-376E99?style=for-the-badge&logo=h2&logoColor=white"> <img src="https://img.shields.io/badge/AOP-FF6C37?style=for-the-badge&logo=aspectj&logoColor=white">
+<img src="https://img.shields.io/badge/H2-376E99?style=for-the-badge&logo=h2&logoColor=white"> 
 
 ### Version Control  
 <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
