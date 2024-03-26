@@ -29,9 +29,12 @@ public class JwtService {
     public static LoginUser verifyJwtToken(String token){
         // decode the token
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(JwtValueObject.SECRET_KEY)).build().verify(token);
-        // get id and role
+
+        // get id, role, and expiration
         Long id = decodedJWT.getClaim("id").asLong();
         String role = decodedJWT.getClaim("role").asString();
+        Date expirationAt = decodedJWT.getExpiresAt();
+
         // make user with extracted id and role
         User user = User.builder()
                 .id(id)

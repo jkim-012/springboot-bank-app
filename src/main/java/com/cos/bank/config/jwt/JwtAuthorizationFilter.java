@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+// every subsequent request to protected endpoints is intercepted by the JwtAuthorizationFilter.
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
@@ -23,9 +25,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+
         // check if token exists (verify header)
         if (isHeaderVerify(request, response)) {
+            // get token from header
             String token = request.getHeader(JwtValueObject.HEADER).replace(JwtValueObject.TOKEN_PREFIX, "");
+            // verify jwt token
             LoginUser loginUser = JwtService.verifyJwtToken(token);
 
             // create authentication
