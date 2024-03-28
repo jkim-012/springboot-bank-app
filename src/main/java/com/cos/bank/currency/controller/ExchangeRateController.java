@@ -1,6 +1,7 @@
 package com.cos.bank.currency.controller;
 
 
+import com.cos.bank.currency.service.ExchangeRateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,9 +10,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ExchangeRateController {
 
-    // API to fetch all exchange rates from open API
-    public void getAllExchangeRates() {
+    private final ExchangeRateService exchangeRateService;
 
+    // API to fetch all exchange rates from open API
+    @GetMapping("/test")
+    public void getAllExchangeRates() {
+//        exchangeRateService.getAllExchangeRates();
     }
 
 
