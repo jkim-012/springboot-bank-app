@@ -6,18 +6,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.cos.bank.config.auth.LoginUser;
 import com.cos.bank.user.domain.Role;
 import com.cos.bank.user.domain.User;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
+
 public class JwtService {
-
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    // get the secret key from JwtValueObject
-    private static final String secretKey = new JwtValueObject().getSecretKey();
 
     public static String createJwtToken(LoginUser loginUser) {
 
@@ -27,14 +23,14 @@ public class JwtService {
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtValueObject.EXPIRATION_TIME))
                 .withClaim("id", loginUser.getUser().getId())
                 .withClaim("role", loginUser.getUser().getRole().toString())
-                .sign(Algorithm.HMAC512(secretKey));
+                .sign(Algorithm.HMAC512(JwtValueObject.secretKey));
 
         return JwtValueObject.TOKEN_PREFIX + jwtToken;
     }
 
     public static LoginUser verifyJwtToken(String token) {
         // decode the token
-        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
+        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(JwtValueObject.secretKey)).build().verify(token);
 
         // get id, role, and expiration
         Long id = decodedJWT.getClaim("id").asLong();
