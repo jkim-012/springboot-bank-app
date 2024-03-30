@@ -1,6 +1,7 @@
 package com.cos.bank.currency.service.impl;
 
 import com.cos.bank.currency.domain.Currency;
+import com.cos.bank.currency.dto.ExchangeRateDto;
 import com.cos.bank.currency.dto.ExchangeRateListDto;
 import com.cos.bank.currency.repository.CurrencyRepository;
 import com.cos.bank.currency.service.CurrencyService;
@@ -41,6 +42,15 @@ public class CurrencyServiceImpl implements CurrencyService {
         return ExchangeRateListDto.of(currencyList);
     }
 
+    @Override
+    public ExchangeRateDto.Response getExchangeRate(String searchCurrencyCode) {
+        Currency currency = currencyRepository.findByCurrencyCode(searchCurrencyCode);
+        if (currency == null) {
+            getLatestExchangeRates(); // api request, parse, save process
+            currency = currencyRepository.findByCurrencyCode(searchCurrencyCode); // get data from db again
+        }
+        return ExchangeRateDto.Response.of(currency);
+    }
 
     // get all exchange rates for the system
     private void getLatestExchangeRates() {
@@ -72,9 +82,10 @@ public class CurrencyServiceImpl implements CurrencyService {
     private String getLatestRateString() {
         // url to get the latest exchange rates
         String baseUrl = "https://api.freecurrencyapi.com/v1/latest?";
+        String baseCurrency = "CAD";
 
         String apiKeyQueryParam = "apikey=" + apiKey;
-        String baseCurrencyQueryParam = "&base_currency=CAD";
+        String baseCurrencyQueryParam = "&base_currency=" + baseCurrency;
 
         String apiUrl = baseUrl + apiKeyQueryParam + baseCurrencyQueryParam;
 
